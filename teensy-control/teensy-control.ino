@@ -53,6 +53,7 @@ void recvWithStartEndMarkers() {
 
         if (recvInProgress == true) {
             if (rc != endMarker) {
+                //Serial.println(rc,BIN);
                 receivedChars[ndx] = rc;
                 ndx++;
                 if (ndx >= numChars) {
@@ -62,7 +63,7 @@ void recvWithStartEndMarkers() {
             else {
                 recvInProgress = false;
                 messageLen = ndx;
-                strncpy(currentPacket, receivedChars, messageLen);
+                memcpy(currentPacket, receivedChars, messageLen);
                 lenCurrentPacket = messageLen;
             }
         }
@@ -74,6 +75,7 @@ void recvWithStartEndMarkers() {
 }
 
 void writeBinary1(){
+  //Serial.print('1');
   digitalWrite(DIR, LOW);
   delayMicroseconds(58);
   digitalWrite(DIR, HIGH);
@@ -81,6 +83,7 @@ void writeBinary1(){
 }
 
 void writeBinary0(){
+  //Serial.print('0');
   digitalWrite(DIR, LOW);
   delayMicroseconds(100);
   digitalWrite(DIR, HIGH);
@@ -88,16 +91,23 @@ void writeBinary0(){
 }
 
 void writeDCC(){
-  long i = 0;
   if (lenCurrentPacket > 0){
-    for (i=0; i<lenCurrentPacket; i++){
-      if (currentPacket[i] == '0'){
-        writeBinary0();
-      }
-      else if (currentPacket[i] == '1'){
-        writeBinary1();
+    for (long i=0; i<14; i++){
+      writeBinary1();
+    }
+    for (long i=0; i<lenCurrentPacket; i++){
+      writeBinary0();
+      
+      for (int j=7; j>-1; j--){
+        if ((currentPacket[i] >> j) & 0x01) {
+          writeBinary1();
+        }
+        else {
+          writeBinary0();
+        }
       }
     }
+    writeBinary1();
   }
   writeIdlePacket(); // write an idle packet between repeats
 }
