@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Author: Dr. Daniel J. Whiting
-
-Date: 26/02/2018
-
-DCC control software designed to conform to NMRA S-9.2 and S-9.2.1 standards.
-
----- Notes ----
-
-Currently does not support extended decoder addresses.
-
+Author: Daniel J. Whiting
 """
 
 ### IMPORTS
